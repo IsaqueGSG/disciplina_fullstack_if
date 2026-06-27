@@ -1,0 +1,37 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-color: #f4f6f9 !important;
+}
+
+.wrapper,
+.main-content-wrapper {
+    background-color: transparent !important;
+}
+
+.wrapper {
+    min-height: 100%;
+}
+
+.main-content-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.main-content-wrapper main {
+    width: 100%;
+    height: 100%;
+}
+
+.navbar {
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}

@@ -1,0 +1,252 @@
+CREATE DATABASE jetsky
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE jetsky;
+
+CREATE TABLE produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    preco DECIMAL(10,2) NOT NULL,
+    imagem VARCHAR(255),
+    disponivel BOOLEAN DEFAULT TRUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO produtos
+(nome, descricao, preco, imagem)
+VALUES
+(
+    'Sea-Doo GTI 130',
+    'Ideal para passeios e diversão em família.',
+    250.00,
+    'ModeloA.png'
+),
+(
+    'Yamaha VX Cruiser',
+    'Conforto e desempenho para longos trajetos.',
+    300.00,
+    'ModeloB.png'
+),
+(
+    'Sea-Doo RXP-X',
+    'Modelo esportivo de alta performance.',
+    450.00,
+    'ModeloC.png'
+);
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+
+    foto VARCHAR(255),
+    cidade VARCHAR(100),
+
+    role ENUM(
+        'cliente',
+        'admin'
+    ) DEFAULT 'cliente',
+
+    bloqueado BOOLEAN DEFAULT FALSE,
+
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO usuarios
+(
+    nome,
+    email,
+    senha,
+    foto,
+    cidade,
+    role
+)
+VALUES
+(
+    'João Silva',
+    'joao@email.com',
+    '$2y$10$teste',
+    NULL,
+    'São Paulo',
+    'cliente'
+),
+(
+    'Maria Oliveira',
+    'maria@email.com',
+    '$2y$10$teste',
+    NULL,
+    'Campinas',
+    'cliente'
+),
+(
+    'admin',
+    'admin@admin',
+    '$2y$10$lwTK7WEfRlitiBb7l/wMO.e82.5aK0PGC0EUiSVgUvgeXYDqlZuDK',
+    NULL,
+    'Guarujá',
+    'admin'
+),
+(
+    'user',
+    'user@user',
+    '$2y$10$G4Roj3ilkU.bm.6UVVUgxe4/IUsFhnnXwYUA9jdKm5M8OKKWbClvC',
+    NULL,
+    'Guarujá',
+    'cliente'
+);
+
+CREATE TABLE comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    usuario_id INT NOT NULL,
+    produto_id INT NOT NULL,
+
+    comentario TEXT NOT NULL,
+    nota INT DEFAULT 5,
+
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (produto_id)
+        REFERENCES produtos(id)
+        ON DELETE CASCADE
+);
+
+INSERT INTO comentarios
+(usuario_id, produto_id, comentario, nota)
+VALUES
+(
+    1,
+    1,
+    'Excelente jetski.',
+    5
+),
+(
+    2,
+    1,
+    'Muito confortável.',
+    4
+),
+(
+    1,
+    2,
+    'Gostei bastante.',
+    5
+);
+
+
+CREATE TABLE empresa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+
+    telefone VARCHAR(20),
+    email VARCHAR(100),
+
+    endereco VARCHAR(255),
+    cidade VARCHAR(100),
+    estado VARCHAR(50),
+
+    mapa_iframe TEXT,
+
+    instagram VARCHAR(255),
+    facebook VARCHAR(255),
+    youtube VARCHAR(255),
+    whatsapp VARCHAR(30),
+
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO empresa
+(
+    nome,
+    descricao,
+    telefone,
+    email,
+    endereco,
+    cidade,
+    estado,
+    mapa_iframe,
+    instagram,
+    facebook,
+    youtube,
+    whatsapp
+)
+VALUES
+(
+    'Jetsky Adventure',
+    'Empresa especializada em aluguel de jetskis.',
+    '(11) 99999-9999',
+    'contato@jetsky.com',
+    'Av. Beira Mar, 100',
+    'Guarujá',
+    'SP',
+    '<iframe src="https://www.google.com/maps/embed?..."></iframe>',
+    'https://instagram.com/jetskyadventure',
+    'https://facebook.com/jetskyadventure',
+    'https://youtube.com/@jetskyadventure',
+    '5511999999999'
+);
+
+CREATE TABLE IF NOT EXISTS contatos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    mensagem TEXT NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO contatos 
+(
+nome, 
+email, 
+mensagem, 
+criado_em
+) 
+VALUES 
+(
+    'Carlos Silva', 
+    'carlos.silva@email.com', 
+    'Gostaria de saber se vocês abrem aos feriados para o aluguel de Jet Ski.', 
+    NOW() - INTERVAL 2 DAY
+),
+(
+    'Mariana Souza', 
+    'mariana.souza@empresa.com', 
+    'Tenho interesse em fechar um pacote corporativo para 10 pessoas no próximo mês. Como funciona o desconto?',
+    NOW() - INTERVAL 5 HOUR
+    ),
+(
+    'Roberto Alves', 
+    'roberto.alves@gmail.com', 
+    'Tentei realizar uma reserva pelo site mas o meu navegador travou no momento do pagamento. O jet ski ainda está disponível?',
+     NOW()
+);
+
+CREATE TABLE IF NOT EXISTS reservas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    data_reserva DATE NOT NULL,
+    hora_reserva TIME NOT NULL,
+    status VARCHAR(50) DEFAULT 'Pendente',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
+);
+
+INSERT INTO reservas 
+(usuario_id, produto_id, data_reserva, hora_reserva, status) 
+VALUES 
+(1, 1, '2026-07-15', '09:00:00', 'Pendente'),
+(1, 2, '2026-07-18', '14:30:00', 'Aprovada'),
+(2, 1, '2026-07-20', '10:00:00', 'Cancelada');
